@@ -1,0 +1,94 @@
+<!DOCTYPE html>import Layout from '../layouts/Layout.astro';
+import Social from '../components/Social.astro'
+<Layout title="Speedabraker | Sumit">
+  <!-- Click to Enter Overlay -->
+  <div id="click-overlay" class="click-overlay">
+    <div class="particles-container" id="particles"></div>
+    <div class="aurora-gradient"></div>
+    <div class="noise-overlay"></div>
+    
+    <div class="overlay-content magnetic-wrap" id="magneticWrap">
+      <div class="magnetic-inner">
+        <h1 class="cta-text" id="ctaText" data-text="CLICK TO ENTER">CLICK TO ENTER</h1>
+        <div class="cta-underline"></div>
+        <div class="cta-subtext">IMMERSIVE EXPERIENCE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Center -->
+  <main class="hero" id="hero">
+    <div class="hero-content" id="heroContent">
+      <!-- Main Title -->
+      <h1 class="title">
+        <span class="shimmer-text">Speedabraker</span>
+      </h1>
+      
+      <!-- Social Row -->
+      <div class="social-row">
+        <!-- Social Box - Transforms into grid on hover -->
+        <Social />
+        
+        <!-- Name -->
+        <span class="name">Sumit</span>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+document.addEventListener('astro:page-load', () => {
+    const clickOverlay = document.getElementById('click-overlay');
+    const bgMusic = document.getElementById('bgMusic') as HTMLAudioElement;
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    
+    // Check if we should auto-hide overlay (if previously entered)
+    if (clickOverlay) {
+        if (sessionStorage.getItem('hasEntered') === 'true') {
+            clickOverlay.style.display = 'none';
+        } else {
+            clickOverlay.addEventListener('click', () => {
+                // Play Music if not already playing
+                if (bgMusic && bgMusic.paused) {
+                    bgMusic.play().catch(console.error);
+                }
+                
+                // Set flag
+                sessionStorage.setItem('hasEntered', 'true');
+
+                // Update Play/Pause Button State if it exists
+                if (playPauseBtn) {
+                   playPauseBtn.classList.add('playing');
+                   sessionStorage.setItem('isPlaying', 'true');
+                }
+
+                clickOverlay.classList.add('fade-out');
+                setTimeout(() => {
+                  clickOverlay.remove();
+                }, 600);
+            });
+        }
+    }
+
+    // Social Box Logic
+    const socialBox = document.getElementById('socialBox');
+    if (socialBox && window.innerWidth < 640) {
+        socialBox.addEventListener('click', (e) => {
+          if (!(e.target as HTMLElement).closest('.social-link')) {
+            socialBox.classList.toggle('open');
+          }
+        });
+    }
+
+    // Close social on escape or click outside
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && socialBox) socialBox.classList.remove('open');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (socialBox && !socialBox.contains(e.target as Node)) {
+          socialBox.classList.remove('open');
+        }
+    });
+});
+</script>
